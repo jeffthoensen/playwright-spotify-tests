@@ -10,7 +10,7 @@ test('Spotify homepage loads', async ({ page }) => {
 test('Spotify login', async ({ page }) => {
   await page.goto('https://www.spotify.com');
   await page.click('button[data-testid="login-button"]');
-  await page.waitForURL('https://accounts.spotify.com/**', { timeout: 10000 });
+  await page.waitForURL('https://accounts.spotify.com/**');
   await page.fill('input[id="login-username"]', process.env.SPOTIFY_USERNAME);
   await page.click('button[data-testid="login-button"]');
   const isVerificationPage = await page.url().includes('challenge.spotify.com') && (await page.locator('text=/Enter the 6-digit code.*sent to you/i').count() > 0);
@@ -21,6 +21,6 @@ test('Spotify login', async ({ page }) => {
   }
   await page.fill('input[id="login-password"]', process.env.SPOTIFY_PASSWORD);
   await page.click('button[data-testid="login-button"]');
-  await page.waitForURL('https://open.spotify.com/**', { timeout: 5000 });
+  await page.waitForURL('https://open.spotify.com/**');
   expect(page.url()).toContain('open.spotify.com');
 });
