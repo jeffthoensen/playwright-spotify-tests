@@ -1,26 +1,10 @@
 const { test, expect } = require('@playwright/test');
+const { LoginPage } = require('../pages/loginPage');
 require('dotenv').config();
 
-test('Spotify homepage loads', async ({ page }) => {
-  await page.goto('https://www.spotify.com');
-  const title = await page.title();
-  expect(title).toContain('Spotify');
-});
-
-test('Spotify login', async ({ page }) => {
-  await page.goto('https://www.spotify.com');
-  await page.click('button[data-testid="login-button"]');
-  await page.waitForURL('https://accounts.spotify.com/**');
-  await page.fill('input[id="login-username"]', process.env.SPOTIFY_USERNAME);
-  await page.click('button[data-testid="login-button"]');
-  const isVerificationPage = await page.url().includes('challenge.spotify.com') && (await page.locator('text=/Enter the 6-digit code.*sent to you/i').count() > 0);
-  if (isVerificationPage) {
-    await page.waitForSelector('button >> text=/Log in with a password/i', { timeout: 10000 });
-    await page.locator('button >> text=/Log in with a password/i').scrollIntoViewIfNeeded();
-    await page.click('button >> text=/Log in with a password/i');
-  }
-  await page.fill('input[id="login-password"]', process.env.SPOTIFY_PASSWORD);
-  await page.click('button[data-testid="login-button"]');
-  await page.waitForURL('https://open.spotify.com/**');
-  expect(page.url()).toContain('open.spotify.com');
+test('should log in to Spotify successfully', async ({ page }) => {
+  const loginPage = new LoginPage(page);
+  await loginPage.navigate();
+  await loginPage.login(process.env.SPOTIFY_USERNAME, process.env.SPOTIFY_PASSWORD);
+  await expect(page).toHaveURL('https://open.spotify.com/**');
 });
